@@ -127,7 +127,7 @@ namespace EasyRoulette
 
         public ColumnStack(uint column, uint money)
         {
-            _columnNum = column % 13 + 1;
+            _columnNum = column > 12 || column < 1 ? 1 : _columnNum;
             StackMoney = money;
             Multiple = 12;
         }

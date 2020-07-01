@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace EasyRoulette
 {
@@ -8,21 +9,74 @@ namespace EasyRoulette
         private uint _ballIndex = 0;
 
         private const uint MaxIndex = 37;
-        
-        private readonly int[] _rouletteArray = new int[]
-        {
-            0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36
-        };
 
-        public void Roll()
+        private List<uint> _historyJackPot = new List<uint>();
+        private List<uint> _historyBall = new List<uint>();
+        
+        public void Roll(int seed = 0)
         {
-            Random random = new Random();
+            Random timeRandom = new Random();
+            Random random = new Random(timeRandom.Next() + seed * 314);
             uint randomStepNum = (uint)random.Next(1000);
             _jackPotIndex = (_jackPotIndex + randomStepNum) % MaxIndex;
-
             _ballIndex = (uint) random.Next(1000) % MaxIndex;
+
+            RecordHistory();
         }
         
+        public void ShowResult()
+        {
+            string showStr = $"****** RESULT ******\n" +
+                             "   JackPot:   {0}  \n" +
+                             "   BallIndex: {1}  \n" + 
+                             "********************\n";
+            Console.WriteLine(showStr, _jackPotIndex, _ballIndex);
+        }
+
+        public uint GetBallIndex()
+        {
+            return _ballIndex;
+        }
+
+        public uint GetJackPotIndex()
+        {
+            return _jackPotIndex;
+        }
+
+        
+        public void ShowHistory()
+        {
+            var jackPotArray = new int[37];
+            var ballArray = new int[37];
+
+            foreach (var item in _historyJackPot)
+            {
+                jackPotArray[item]++;
+            }
+
+            foreach (var item in _historyBall)
+            {
+                ballArray[item]++;
+            }
+
+            Console.WriteLine(" JackPot History Times");
+            for (int i = 0; i < jackPotArray.Length; i++)
+            {
+                Console.WriteLine(" The {0} Num: {1} ", i, jackPotArray[i]);
+            }
+            Console.WriteLine(" Ball History Times");
+            for (int i = 0; i < ballArray.Length; i++)
+            {
+                Console.WriteLine(" The {0} Num: {1} ", i, ballArray[i]);
+            }
+        }
+
+        private void RecordHistory()
+        {
+            _historyJackPot.Add(_jackPotIndex);
+            _historyBall.Add(_ballIndex);
+        }
+
     }
 
 }
