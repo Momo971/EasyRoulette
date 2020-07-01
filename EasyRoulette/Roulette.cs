@@ -15,23 +15,15 @@ namespace EasyRoulette
         
         public void Roll(int seed = 0)
         {
-            Random timeRandom = new Random();
-            Random random = new Random(timeRandom.Next() + seed * 314);
+            Random random = new Random(Guid.NewGuid().GetHashCode());
             uint randomStepNum = (uint)random.Next(1000);
             _jackPotIndex = (_jackPotIndex + randomStepNum) % MaxIndex;
             _ballIndex = (uint) random.Next(1000) % MaxIndex;
-
+            
             RecordHistory();
         }
         
-        public void ShowResult()
-        {
-            string showStr = $"****** RESULT ******\n" +
-                             "   JackPot:   {0}  \n" +
-                             "   BallIndex: {1}  \n" + 
-                             "********************\n";
-            Console.WriteLine(showStr, _jackPotIndex, _ballIndex);
-        }
+       
 
         public uint GetBallIndex()
         {
@@ -43,6 +35,17 @@ namespace EasyRoulette
             return _jackPotIndex;
         }
 
+        #region ShowMethods
+
+        public void ShowResult()
+        {
+            string showStr = "\n" +
+                             "****** RESULT ******\n" +
+                             "   JackPot:   {0}  \n" +
+                             "   BallIndex: {1}  \n" + 
+                             "********************\n";
+            Console.WriteLine(showStr, _jackPotIndex, _ballIndex);
+        } 
         
         public void ShowHistory()
         {
@@ -71,6 +74,9 @@ namespace EasyRoulette
             }
         }
 
+        #endregion
+        
+        
         private void RecordHistory()
         {
             _historyJackPot.Add(_jackPotIndex);

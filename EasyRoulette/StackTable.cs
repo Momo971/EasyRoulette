@@ -1,11 +1,74 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace EasyRoulette
 {
     public class StackTable : Singleton<StackTable>
     {
+        private List<Player> _players = new List<Player>();
+        private List<StackBill> _billBuffer = new List<StackBill>();
+
+        public void AddPlayer(Player player)
+        {
+            if(!_players.Contains(player))
+                _players.Add(player);
+        }
+        public void CreateBill(uint playerid, StackBase stackData)
+        {
+            var bill = new StackBill(playerid, stackData);
+            _billBuffer.Add(bill);
+        }
+
+        public void SettleBills()
+        {
+            foreach (var bill in _billBuffer)
+            {
+                var player =  _players.Find(item => item.IsThis(bill.GetPlayerId()));
+                player?.AddMoney(bill.GetRewardAmount());
+            }
+
+            _billBuffer.Clear();
+        }
         
+    }
+
+    public class StackBill
+    {
+        private uint _playerId;
+        private StackBase _stackData;
+        
+        public StackBill(uint playerid, StackBase stackData)
+        {
+            _playerId = playerid;
+            _stackData = stackData;
+        }
+
+        public uint GetPlayerId()
+        {
+            return _playerId;
+        }
+
+        public uint GetRewardAmount()
+        {
+            uint reValue = 0;
+            var ballIndex = Roulette.GetInstance().GetBallIndex();
+            if (_stackData.GetIsWin(ballIndex))
+            {
+                reValue += _stackData.GetRewardMoney();
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine(" Win  : +" + reValue.ToString());
+                Console.ForegroundColor = ConsoleColor.Gray;
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(" Lose : -" + _stackData.GetPrice().ToString());
+                Console.ForegroundColor = ConsoleColor.Gray;
+            }
+
+            return reValue;
+        }
     }
 
     public abstract class StackBase
@@ -16,6 +79,11 @@ namespace EasyRoulette
         public uint GetRewardMoney()
         {
             return StackMoney * Multiple;
+        }
+
+        public uint GetPrice()
+        {
+            return StackMoney;
         }
 
         public abstract bool GetIsWin(uint result);
