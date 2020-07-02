@@ -56,15 +56,6 @@ namespace EasyRoulette
             if (_stackData.GetIsWin(ballIndex))
             {
                 reValue += _stackData.GetRewardMoney();
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine(" Win  : +" + reValue.ToString());
-                Console.ForegroundColor = ConsoleColor.Gray;
-            }
-            else
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(" Lose : -" + _stackData.GetPrice().ToString());
-                Console.ForegroundColor = ConsoleColor.Gray;
             }
 
             return reValue;
